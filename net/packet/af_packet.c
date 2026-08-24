@@ -1945,6 +1945,7 @@ static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
 	    sock->type == SOCK_RAW)
 		skb->protocol = dev_parse_header_protocol(skb);
 
+
 	skb_probe_transport_header(skb);
 
 	/* Move network header to the right position for VLAN tagged packets */
