@@ -1,0 +1,54 @@
+name: Cherry-pick dari Kernel Lain
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: 'URL repo kernel sumber (misal https://github.com/xxx/xxx.git)'
+        required: true
+      source_branch:
+        description: 'Branch di repo sumber tempat commit itu berada'
+        required: true
+      commit_hashes:
+        description: 'Hash commit yang mau diambil, pisahkan spasi, urutan lama ke baru'
+        required: true
+      target_branch:
+        description: 'Branch di repo kamu yang mau ditambahkan patch ini'
+        required: true
+        default: 'Yudharn-melt-rebase'
+
+jobs:
+  cherry-pick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo kamu
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/yudharn/Pzqqt-Melt-Rebase.git repo-kamu
+          cd repo-kamu
+          git checkout ${{ github.event.inputs.target_branch }}
+          git config user.email "you@example.com"
+          git config user.name "yudharn"
+
+      - name: Tambah remote sumber & fetch
+        run: |
+          cd repo-kamu
+          git remote add external ${{ github.event.inputs.source_url }}
+          git fetch external ${{ github.event.inputs.source_branch }}
+
+      - name: Cherry-pick commit
+        run: |
+          cd repo-kamu
+          for hash in ${{ github.event.inputs.commit_hashes }}; do
+            echo "Cherry-picking $hash ..."
+            if ! git cherry-pick "$hash"; then
+              echo "::error::Konflik saat cherry-pick $hash. Batal, silakan resolve manual di lokal."
+              git status
+              git cherry-pick --abort
+              exit 1
+            fi
+          done
+
+      - name: Push hasil cherry-pick
+        run: |
+          cd repo-kamu
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/yudharn/Pzqqt-Melt-Rebase.git ${{ github.event.inputs.target_branch }}
