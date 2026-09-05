@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Clone repo kamu
         run: |
-          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/yudharn/Kernel-Source.git repo-kamu
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/yudharn/Pzqqt-Melt-Rebase.git repo-kamu
           cd repo-kamu
           git checkout ${{ github.event.inputs.target_branch }}
           git config user.email "you@example.com"
@@ -51,4 +51,4 @@ jobs:
       - name: Push hasil cherry-pick
         run: |
           cd repo-kamu
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/yudharn/Kernel-Source.git ${{ github.event.inputs.target_branch }}
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/yudharn/Pzqqt-Melt-Rebase.git ${{ github.event.inputs.target_branch }}
