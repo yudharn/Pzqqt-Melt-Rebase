@@ -2,8 +2,8 @@ name: Sync Fork with Upstream
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # tiap hari jam 00:00 UTC — bebas diubah, ini terpisah dari jadwal build kernel
-  workflow_dispatch:       # biar bisa dipicu manual dari tab Actions juga
+    - cron: '0 0 * * *'   
+  workflow_dispatch:       
 
 permissions:
   contents: write
