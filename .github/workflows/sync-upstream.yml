@@ -1,0 +1,22 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # tiap hari jam 00:00 UTC — bebas diubah, ini terpisah dari jadwal build kernel
+  workflow_dispatch:       # biar bisa dipicu manual dari tab Actions juga
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync melt-rebase branch from upstream Pzqqt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh repo sync yudharn/Pzqqt-Melt-Rebase \
+            -b melt-rebase \
+            --source Pzqqt/android_kernel_xiaomi_marble
+            
