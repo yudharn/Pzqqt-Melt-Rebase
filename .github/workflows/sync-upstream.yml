@@ -17,6 +17,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh repo sync yudharn/Pzqqt-Melt-Rebase \
-            -b melt-rebase \
+            -b Yudharn-melt-rebase \
             --source Pzqqt/android_kernel_xiaomi_marble
             
