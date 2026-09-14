@@ -1149,3 +1149,99 @@ CONFIG_MACH_XIAOMI_MARBLE=y
 # CONFIG_MTD_BLOCK2MTD is not set
 # CONFIG_MTD_OOPS is not set
 CONFIG_PSTORE_RAM=y
+
+#
+# ===== Tambahan hasil audit vs gki_defconfig =====
+# Config di bawah ada di gki_defconfig tapi belum ada di marble_defconfig.
+# Sudah difilter manual: config salah vendor SoC (HiSilicon/Spreadtrum/Allwinner),
+# placeholder yang belum diisi nilainya, dan config yang bentrok sama scheduler
+# WALT yang udah aktif di marble, SENGAJA tidak diikutkan. Detail di chat.
+#
+
+# --- Memory reclaim tuning (generic, subsystem MM) ---
+CONFIG_ANON_MIN_RATIO=2
+CONFIG_CLEAN_LOW_RATIO=4
+CONFIG_CLEAN_MIN_RATIO=1
+
+# --- Multi-Gen LRU (MGLRU) ---
+CONFIG_LRU_GEN=y
+CONFIG_LRU_GEN_ENABLED=y
+CONFIG_LRU_GEN_STATS=y
+
+# --- UKSM (plain CONFIG_KSM sengaja tidak ditambahkan, lihat penjelasan) ---
+CONFIG_UKSM=y
+CONFIG_UKSM_CPU_GOVERNOR=2
+CONFIG_UKSM_SLEEP_MS=1000
+
+# --- ZRAM tambahan (CONFIG_ZRAM=m & ZRAM_WRITEBACK udah ada, ini extend aja) ---
+CONFIG_ZBLOCK=y
+CONFIG_ZRAM_USE_ZBLOCK=y
+CONFIG_ZRAM_AUTO_RESIZE=y
+CONFIG_ZRAM_AUTO_RESIZE_PERCENT=50
+CONFIG_ZRAM_DEF_COMP="zstd"
+CONFIG_ZRAM_DEF_COMP_ZSTD=y
+CONFIG_ZRAM_ENTROPY=y
+CONFIG_CRYPTO_LZ4KD=y
+CONFIG_KCOMPRESSD=y
+
+# --- CPU frequency governor (nambah kode governor + set default) ---
+CONFIG_CPU_FREQ_GOV_ONDEMAND=y
+CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+CONFIG_CPU_FREQ_GOV_USERSPACE=y
+CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y
+CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL=y
+CONFIG_CPU_IDLE_MULTIPLE_DRIVERS=y
+
+# --- I/O scheduler default (kode ADIOS udah ada di marble, ini set jadi default) ---
+CONFIG_MQ_ADIOS_DEFAULT=y
+
+# --- F2FS tambahan (F2FS_FS & F2FS_FS_COMPRESSION udah aktif) ---
+CONFIG_F2FS_FS_LZ4=y
+CONFIG_F2FS_FS_ZSTD=y
+CONFIG_F2FS_FS_XATTR=y
+CONFIG_F2FS_CHECK_FS=n
+CONFIG_F2FS_STAT_FS=n
+CONFIG_F2FS_IO_TRACE=n
+
+# --- DAMON tambahan (DAMON core udah aktif di marble) ---
+CONFIG_DAMON_VADDR=y
+CONFIG_DAMON_LRU_SORT=y
+
+# --- KernelSU SuSFS ---
+CONFIG_KSU_SUSFS=y
+CONFIG_KSU_SUSFS_SUS_PATH=y
+CONFIG_KSU_SUSFS_SUS_MOUNT=y
+CONFIG_KSU_SUSFS_SUS_KSTAT=y
+CONFIG_KSU_SUSFS_SUS_MAP=y
+CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+CONFIG_KSU_SUSFS_ENABLE_LOG=y
+
+# --- NoMount ---
+CONFIG_NOMOUNT=y
+
+# --- Storage: UFS inline crypto engine (Qualcomm) ---
+CONFIG_SCSI_UFS_INLINE_CRYPTO_QTI=y
+
+# --- RCU tuning ---
+CONFIG_RCU_BOOST_DELAY=500
+CONFIG_RCU_BOOT_END_DELAY=20000
+CONFIG_RCU_NOCB_CPU_CB_BOOST=y
+
+# --- Boot entropy (bantu ngurangin delay nunggu entropy pas boot) ---
+CONFIG_RANDOM_TRUST_BOOTLOADER=y
+CONFIG_RANDOM_TRUST_CPU=y
+
+# --- Build & lain-lain ---
+CONFIG_PM_CLK=y
+CONFIG_BUILD_ARM64_DT_OVERLAY=y
+CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=y
+CONFIG_MODULE_COMPRESS_ZSTD=y
+CONFIG_IKHEADERS=y
+# CONFIG_TRIM_UNUSED_KSYMS is not set
+CONFIG_SUSPEND_SKIP_SYNC=y
+CONFIG_NETFILTER_XT_TARGET_REJECT=y
+CONFIG_BOEFFLA_WL_BLOCKER=y
+CONFIG_POWERSUSPEND=y
