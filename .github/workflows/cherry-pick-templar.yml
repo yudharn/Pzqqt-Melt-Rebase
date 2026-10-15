@@ -1,22 +1,26 @@
-name: Cherry-pick Templar commits
+name: Cherry-pick commits dari kernel source
 
 on:
   workflow_dispatch:
     inputs:
+      source_repo:
+        description: "Repo sumber (owner/repo atau URL git)"
+        default: "Steambot12/Templar-Kernel-GKI-5.10"
+        required: true
       commits:
-        description: "Commit Templar (SHA lengkap), pisah spasi, urut dari lama ke baru"
+        description: "Commit (SHA lengkap), pisah spasi, urut dari lama ke baru"
         default: "fe1f62c1e003d491bb0f4806a2e6328fc9e6766d 081f3967784489a54aaa6b6aacdf56fd4c24ebb7"
         required: true
       base:
         description: "Branch dasar"
-        default: "Yudharn-melt-rebase"
+        default: "test-melt-rebase"
         required: true
       target:
         description: "Branch hasil (baru)"
         default: "templar-pick"
         required: true
-      prefer_templar:
-        description: "Kalau konflik, pakai versi Templar (-X theirs)"
+      prefer_source:
+        description: "Kalau konflik, pakai versi sumber (-X theirs)"
         type: boolean
         default: false
 
@@ -35,16 +39,22 @@ jobs:
 
       - name: Cherry-pick
         env:
+          SRC: ${{ inputs.source_repo }}
           SHAS: ${{ inputs.commits }}
           TARGET: ${{ inputs.target }}
-          PREFER: ${{ inputs.prefer_templar }}
+          PREFER: ${{ inputs.prefer_source }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git remote add templar https://github.com/Steambot12/Templar-Kernel-GKI-5.10.git
+          case "$SRC" in
+            http*|git@*) URL="$SRC" ;;
+            *) URL="https://github.com/${SRC}.git" ;;
+          esac
+          git remote add src "$URL"
+
           for sha in $SHAS; do
-            git fetch --no-tags templar "$sha" || { echo "::error::Gagal fetch $sha"; exit 1; }
+            git fetch --no-tags src "$sha" || { echo "::error::Gagal fetch $sha"; exit 1; }
           done
 
           git checkout -b "$TARGET"
@@ -64,7 +74,7 @@ jobs:
             fi
           done
 
-          # push hasil yang berhasil (walau commit 2 gagal)
+          # push hasil yang berhasil (walau ada commit yang gagal)
           git push origin "$TARGET"
 
           exit $FAILED
