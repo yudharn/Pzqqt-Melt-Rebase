@@ -3,6 +3,10 @@ name: Cherry-pick Templar commits
 on:
   workflow_dispatch:
     inputs:
+      commits:
+        description: "Commit Templar (SHA lengkap), pisah spasi, urut dari lama ke baru"
+        default: "fe1f62c1e003d491bb0f4806a2e6328fc9e6766d 081f3967784489a54aaa6b6aacdf56fd4c24ebb7"
+        required: true
       base:
         description: "Branch dasar"
         default: "Yudharn-melt-rebase"
@@ -22,10 +26,6 @@ permissions:
 jobs:
   pick:
     runs-on: ubuntu-latest
-    env:
-      SHAS: >-
-        fe1f62c1e003d491bb0f4806a2e6328fc9e6766d
-        081f3967784489a54aaa6b6aacdf56fd4c24ebb7
     steps:
       - name: Checkout base
         uses: actions/checkout@v4
@@ -35,6 +35,7 @@ jobs:
 
       - name: Cherry-pick
         env:
+          SHAS: ${{ inputs.commits }}
           TARGET: ${{ inputs.target }}
           PREFER: ${{ inputs.prefer_templar }}
         run: |
