@@ -1,0 +1,70 @@
+name: Cherry-pick Templar commits
+
+on:
+  workflow_dispatch:
+    inputs:
+      base:
+        description: "Branch dasar"
+        default: "Yudharn-melt-rebase"
+        required: true
+      target:
+        description: "Branch hasil (baru)"
+        default: "templar-pick"
+        required: true
+      prefer_templar:
+        description: "Kalau konflik, pakai versi Templar (-X theirs)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    env:
+      SHAS: >-
+        fe1f62c1e003d491bb0f4806a2e6328fc9e6766d
+        081f3967784489a54aaa6b6aacdf56fd4c24ebb7
+    steps:
+      - name: Checkout base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.base }}
+          fetch-depth: 0
+
+      - name: Cherry-pick
+        env:
+          TARGET: ${{ inputs.target }}
+          PREFER: ${{ inputs.prefer_templar }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git remote add templar https://github.com/Steambot12/Templar-Kernel-GKI-5.10.git
+          for sha in $SHAS; do
+            git fetch --no-tags templar "$sha" || { echo "::error::Gagal fetch $sha"; exit 1; }
+          done
+
+          git checkout -b "$TARGET"
+
+          OPTS=""
+          if [ "$PREFER" = "true" ]; then OPTS="-X theirs"; fi
+
+          FAILED=0
+          for sha in $SHAS; do
+            echo "=== cherry-pick -m 1 $sha ==="
+            if ! git cherry-pick -m 1 $OPTS "$sha"; then
+              echo "::error::Konflik di $sha"
+              git status --short | grep -E '^(UU|AA|DU|UD|DD|AU|UA)' || true
+              git cherry-pick --abort
+              FAILED=1
+              break
+            fi
+          done
+
+          # push hasil yang berhasil (walau commit 2 gagal)
+          git push origin "$TARGET"
+
+          exit $FAILED
+          
